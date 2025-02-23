@@ -11,7 +11,7 @@ pipeline {
 
   environment {
     // 镜像仓库地址
-    REGISTRY_URL          = '192.168.157.4:32380'
+    REGISTRY_URL          = '192.168.157.92'
     // harbor 访问凭证
     REGISTRY_CERT         = 'harbor-credential'
     // harbor 项目
@@ -19,13 +19,13 @@ pipeline {
     // 镜像名称
     HARBOR_IMAGE_NAME     = 'vote'
     // 源码地址
-    SOURCE_URL            = 'http://192.168.157.61:31150/root/vote.git'
+    SOURCE_URL            = 'http://192.168.157.90:9090/devops/vote.git'
     // 源码凭证
     SOURCE_CERT           = 'gitlab'
     // helm地址
-    HELM_URL              = 'http://192.168.157.61:31150/root/helm-charts.git'
+    HELM_URL              = 'http://192.168.157.90:9090/devops/helm-charts.git'
     // helm repo
-    HELM_REPO             = '192.168.157.61:31150/root/helm-charts.git'
+    HELM_REPO             = '192.168.157.90:9090/devops/helm-charts.git'
     // docker build 的执行上下文
     DOCKER_CONTEXT        = "."
     // dockerfile 的文件名与所在位置
@@ -84,11 +84,11 @@ pipeline {
               script {
                 env.IMAGE_TAG = "${SOURCE_Branch}-${GIT_COMMIT}"
                 sh '''
-                  yq eval '.vote.image.tag = env(IMAGE_TAG)' -i sit/app1/values.yaml
+                  yq eval '.spec.template.spec.containers[0].image = env(IMAGE_TAG)' -i sit/app1/templates/vote-deployment.yaml
                   git config user.name "CI"
                   git config user.email "CI@DCE5.io"
 
-                  git add sit/app1/values.yaml
+                  git add sit/app1/templates/vote-deployment.yaml
                   # 检查是否有本地修改
                   git diff --quiet && git diff --staged --quiet || git commit -m "update sit env app1 image tag to ${IMG}"
 
