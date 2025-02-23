@@ -82,9 +82,8 @@ pipeline {
             git(branch: 'main', credentialsId: "${SOURCE_CERT}", url: "${HELM_URL}")
             withCredentials([usernamePassword(credentialsId:"${SOURCE_CERT}", passwordVariable:'password', usernameVariable:'username')]) {
               script {
-                env.IMAGE_TAG = "${SOURCE_Branch}-${GIT_COMMIT}"
                 sh '''
-                  yq eval '.spec.template.spec.containers[0].image = env(IMAGE_TAG)' -i sit/app1/templates/vote-deployment.yaml
+                  yq eval '.spec.template.spec.containers[0].image = env(IMG)' -i sit/app1/templates/vote-deployment.yaml
                   git config user.name "CI"
                   git config user.email "CI@DCE5.io"
 
